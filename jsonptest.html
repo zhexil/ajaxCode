@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <title>跨域请求</title>
+  </head>
+
+  <body>
+    <script>
+      // $.ajax({
+      //   method: 'GET',
+      //   // url: 'http://ajax.frontend.itheima.net:3006/api/jsonp',
+      //   url:'http://www.liulongbin.top:3006/api/jsonp',
+      //   data: {
+      //     name: 'zs',
+      //     age: 20
+      //   },
+      //   success: function (res) {
+      //     console.log(res);
+      //     /** 输出
+      //      * Access to XMLHttpRequest at 'http://www.liulongbin.top:3006/api/jsonp?name=zs&age=20' from origin 'null' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+      //     */
+      //   }
+      // })
+
+      // jQuery里的JSONP
+      $.ajax({
+        url:'http://www.liulongbin.top:3006/api/jsonp?name=zs&age=20',
+        dataType:'jsonp',
+        success:function(res){
+          console.log(res);
+        }
+      })
+    </script>
+    <!-- <script>
+      function success(data){
+        console.log('拿到了数据');
+        console.log(data);
+      }
+    </script> -->
+    <!-- <script>
+      success({name:'zs',age:20})
+    </script> -->
+    <!-- 如果getData.js调用的函数不是success而是其它函数名，如何保证成功拿到数据？查询字符串/ promise+匿名函数-->
+    <!-- <script src="js/getData.js?callback=success"></script> -->
+    <!-- <script src="http:www.liulongbin.top:3006/api/jsonp?callback=success&name=zs&age=20"></script> -->
+  </body>
+
+</html>

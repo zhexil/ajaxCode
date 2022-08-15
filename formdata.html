@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap-3.4.1/css/bootstrap.min.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="bootstrap-3.4.1/js/bootstrap.min.js"></script>
+    <title>FormData对象及上传文件</title>
+    <style>
+      section {
+        padding: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <section>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">发表评论</h3>
+        </div>
+        <form action="" method="POST" role="form" class="panel-body" id="form1">
+          <div class="form-group">
+            <label for="" class="normal">评论人</label>
+            <input type="text" name="uname" class="form-control" id="" placeholder="Input field">
+            <label for="" class="normal">密码：</label>
+            <input type="password" name="upwd" class="form-control" id="" placeholder="Input field">
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">上传文件测试</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label for="exampleInputFile">上传文件</label>
+            <input type="file" id="exampleInputFile" class="file1">
+            <button id="btnUpload" class="btn btn-primary" style="margin: 20px 0;">XMLHttpRequest 对象上传文件</button>
+            <button id="btnjQUpload" class="btn btn-primary" style="margin: 20px 0;">jQuery上传文件</button>
+            <!-- bootstrap 进度条 -->
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"
+                aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;" id="percent">0%</div>
+            </div>
+            <img src="./img/loading.gif" alt="" style="display: none;" id="loading">
+            <img src="" class="img-responsive" alt="Responsive image" id="img" style="margin-top: 20px;">
+          </div>
+        </div>
+      </div>
+    </section>
+    <script>
+      // FormData对象获取网页表单的值
+      let fm = document.querySelector('#form1')
+      fm.addEventListener('submit', function (e) {
+        e.preventDefault()
+        let fd = new FormData(this)
+        console.log(fd instanceof Object);
+        let xhr = new XMLHttpRequest()
+        xhr.open('POST', 'http://www.liulongbin.top:3006/api/formdata')
+        xhr.send(fd)
+        xhr.addEventListener('readystatechange', function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+          }
+        })
+      })
+      // 利用新版 XMLHttpRequest 对象上传文件
+      let btnUpload = document.querySelector('#btnUpload')
+      btnUpload.addEventListener('click', function (e) {
+        // 获取用户选择的文件列表
+        let files = document.querySelector('.file1').files
+        if (files.length <= 0) {
+          return alert('请选择要上传的文件')
+        }
+        // 向 FormData 中追加文件       
+        let fd = new FormData()
+        fd.append('avatar', files[0])
+        // 实现文件上传
+        let xhr = new XMLHttpRequest()
+        // 显示文件上传进度 监听xhr.upload 的onprogress 事件
+        xhr.upload.addEventListener('progress', function (e) {
+          // e.lengthComputable 是一个布尔值，表示当前上传的资源是否具有可计算的长度
+          if (e.lengthComputable) {
+            // e.loaded 已传输字节；e.total：需传输的总字节
+            let percentComplete = Math.ceil((e.loaded / e.total) * 100)
+            $('#percent').attr('style', 'width:' + percentComplete + '%').html(percentComplete + '%')
+          }
+        })
+        // 监听上传完成的事件
+        xhr.upload.addEventListener('load', function () {
+          $('#percent').removeClass().addClass('progress-bar progress-bar-success progress-bar-striped')
+        })
+        xhr.open('POST', 'http://www.liulongbin.top:3006/api/upload/avatar')
+        xhr.send(fd)
+        xhr.addEventListener('readystatechange', function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            let res = JSON.parse(xhr.responseText)
+            if (res.status === 200) {
+              document.querySelector('#img').src = 'http://www.liulongbin.top:3006' + res.url
+            } else {
+              console.log(res.message);
+            }
+          }
+        })
+      })
+
+      // jQuery 上传文件
+      // 监听到Ajax 请求被发起了
+      $(document).ajaxStart(function(){
+        $('#loading').show()
+      })
+      // 监听到 Ajax完成的事件
+      $(document).ajaxStop(function(){
+        $('#loading').hide()
+      })
+      $('#btnjQUpload').on('click', function () {
+        let files = $('.file1')[0].files
+        if (files.length <= 0) {
+          return alert('请选择要上传的文件！')
+        }
+        let fd = new FormData()
+        fd.append('avatar', files[0])
+        $.ajax({
+          method: 'POST',
+          url: 'http://www.liulongbin.top:3006/api/upload/avatar',
+          data:fd,
+          // 不修改contentType 属性，使用FormData 默认的Content-Type 值
+          contentType:false,
+          // 不对FormData 中的数据进行url 编码，而是将FormData数据原样发送到服务器
+          processData:false,
+          success: function (res) {
+            console.log(res);
+          }
+        })
+      })
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模板引擎实现原理（正则）</title>
+  </head>
+
+  <body>
+    <script>
+      // 1. 基本语法 RegExpObject.exec(string)
+      // var str = 'hello'
+      // var pattern = /o/
+      // //输出的结果 数组形式 ["o", index: 4, input: "hello", groups: undefined]
+      // console.log(pattern.exec(str))
+
+      // 2. 分组 正则表达式中"()"包来的内容表示一个分组,可以通过分组来提取自己想要的内容
+      // var str = '<div>我是{{name}}</div>'
+      // // [a-zA-Z]匹配26个任一字母，不论大小写; '+' 匹配表达式一次或多次；()优先级
+      // var pattern = /{{([a-zA-Z]+)}}/
+      // var patternResult = pattern.exec(str)
+      // console.log(patternResult);
+      //得到name相关的分组信息
+      /*
+      0: "{{name}}"
+      1: "name"
+      groups: undefined
+      index: 7
+      input: "<div>我是{{name}}</div>"
+      length: 2
+      */
+
+      // 3. 字符串的replace函数
+      // var str = '<div>我是{{name}}</div>'
+      // var pattern = /{{([a-zA-Z]+)}}/
+      // var patternResult = pattern.exec(str);
+      // //replace函数返回值为替换后的新字符串
+      // str = str.replace(patternResult[0], patternResult[1])
+      // // 输出的结果是: <div>我是name</div>
+      // console.log(str);
+
+      // 4. 多次replace
+      // var str = '<div>{{name}}今年{{age}}岁了</div>'
+      // // \s 匹配任何空白字符 ; *匹配表达式零次或多次
+      // var pattern = /{{\s*([a-zA-Z]+)\s*}}/
+      // //匹配两次 第一次匹配{{name}} 第二次匹配{{age}}
+      // var patternResult = pattern.exec(str)
+      // str = str.replace(patternResult[0], patternResult[1])
+      // console.log(str); //输出<div>name今年{{age}}岁了</div>
+      // patternResult = pattern.exec(str)
+      // str = str.replace(patternResult[0], patternResult[1])
+      // console.log(str); //输出<div>name今年age岁了</div>
+      // patternResult = pattern.exec(str)
+      // console.log(patternResult); //输出null
+
+      // 5. 使用while循环replace
+      // var str = '<div>{{name}}今年{{age}}岁了</div>'
+      // var pattern = /{{\s*([a-zA-Z]+)\s*}}/
+
+      // var patternResult = null;
+      // //把pattern.exec(str)赋值给patternResult
+      // //如果匹配失败 exec()会返回一个false while循环随即终止
+      // while (patternResult = pattern.exec(str)) {
+      //   console.log(pattern.exec(str));
+      //   str = str.replace(patternResult[0], patternResult[1])
+      // }
+      // // 输出: <div>name今年age岁了</div>
+      // console.log(str);
+
+      // 6. replace替换为真值
+      // var data = {
+      //   name: '张三',
+      //   age: 20
+      // }
+      // var str = '<div>{{name}}今年{{age}}岁了</div>'
+      // var pattern = /{{\s*([a-zA-Z]+)\s*}}/
+      // var patternResult = null
+      // while (patternResult = pattern.exec(str)) {
+      //   str = str.replace(patternResult[0], data[patternResult[1]])
+      // }
+      // // 输出: <div>张三今年20岁了</div>
+      // console.log(str);     
+    </script>
+    <div id="user-box"></div>
+    <script type="text/html" id="tpl-user">
+      <div>姓名：{{name}}</div>
+      <div>年龄：{{age}}</div>
+      <div>性别：{{ gender  }}</div>
+      <div>住址：{{ address }}</div>
+    </script>
+    <script>
+      // 封装template函数
+      function template(ele, data) {
+        let str = document.querySelector(ele).innerHTML
+        let pattern = /{{\s*([a-zA-Z]+)\s*}}/
+        let patternResult = null;
+        while (patternResult = pattern.exec(str)) {
+          str = str.replace(patternResult[0], data[patternResult[1]])
+        }
+        return str
+      }
+      const data = {
+        name: '张三',
+        age: 28,
+        gender: '男',
+        address: '北京顺义马坡'
+      }
+      // 调用模板函数
+      const htmlStr = template('#tpl-user', data)
+      // 渲染HTML结构
+      document.querySelector('#user-box').innerHTML = htmlStr
+
+    </script>
+  </body>
+
+</html>

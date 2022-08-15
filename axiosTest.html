@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/axios.min.js"></script>
+    <title>axios</title>
+  </head>
+
+  <body>
+    <script>
+      let url = 'http://www.liulongbin.top:3006/api/get';
+      let paramsObj = {
+        name: 'zs',
+        age: 20
+      }
+      // axios.get(url, {
+      //   params: paramsObj
+      // }).then(function (res) {
+      //   console.log(res);
+      // })
+      // axios.post('http://www.liulongbin.top:3006/api/post', {
+      //   location: '北京',
+      //   address: '顺义'
+      // }).then(function (res) {
+      //   console.log(res);
+      // })
+      // axios({
+      //   method: 'GET',
+      //   url: url,
+      //   params: paramsObj
+      // }).then(function (res) {
+      //   console.log(res);
+      // })
+      axios({
+        method:'POST',
+        url:'http://www.liulongbin.top:3006/api/post',
+        data:{
+          bookname:'程序员的自我修养',
+          price:666
+        }
+      }).then(function(res){
+        console.log(res);
+      })
+    </script>
+  </body>
+
+</html>

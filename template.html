@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./js/jquery-3.6.0.min.js"></script>
+    <script src="./js/template-web.js"></script>
+    <title>模板引擎的使用</title>
+  </head>
+
+  <body>
+    <!-- <div id="title"></div>
+    <div>姓名：<span id="name"></span></div>
+    <div>年龄：<span id="age"></span></div>
+    <div>会员：<span id="isVIP"></span></div>
+    <div>注册时间：<span id="regTime"></span></div>
+    <div>爱好：
+      <ul id="hobby">
+      </ul>
+    </div> -->
+    <!-- 准备一个容器 -->
+    <div id="container"></div>
+    <script type="text/html" id="tpl-user">
+    <div id="title">{{@title}}</div> 
+    <div>姓名：{{name}}</div>
+    <div>年龄：{{age}}</div>
+    <div>会员：{{if isVIP}}您现在是会员
+      {{else if !isVIP}}
+      您现在还不是会员
+      {{/if}}</div>
+    <div>注册时间：{{regTime | dateFormat}}</div>
+    <div>爱好：
+      <ul id="hobby">
+        {{each hobby}}
+        <li>{{$value}}</li>
+        {{/each}}
+      </ul>
+    </div>
+    <div>消费：
+      <ul>
+        <li>价格：{{xiaofei.price}}</li>
+        <li>消费时间：{{xiaofei.time}}</li>
+      </ul>
+    </div>
+    </script>
+    <script type="text/javascript">
+      // 过滤器要写在上面 直接function dateFormat(date){}也行 ，位置可以放在下面
+      template.defaults.imports.dateFormat = function (date) {
+        const y = date.getFullYear();
+        const m = date.getMonth() + 1;
+        const d = date.getDate();
+        return `${y}-${m}-${d}`
+      }
+      // 使用 art-template
+      const data = {
+        title: '<h3>用户信息</h3>',
+        name: 'zs',
+        age: 20,
+        isVIP: true,
+        regTime: new Date(),
+        hobby: ['吃饭', '睡觉', '打豆豆'],
+        xiaofei: {
+          price: 1000,
+          time: new Date()
+        }
+      }
+      // 调用 template 函数
+      let htmlstr = template('tpl-user', data)
+      $('#container').html(htmlstr)
+
+    </script>
+    <!-- <script>
+      const data = {
+        title: '<h3>用户信息</h3>',
+        name: 'zs',
+        age: 20,
+        isVIP: true,
+        regTime: new Date(),
+        hobby: ['吃饭', '睡觉', '打豆豆']
+      }
+      // 使用传统方式渲染UI结构 频繁操作DOM
+      $('#title').html(data.title)
+      $('#name').html(data.name)
+      $('#age').html(data.age)
+      $('#isVIP').html(data.isVIP)
+      $('#regTime').html(data.regTime)
+      var row = []
+      $.each(data.hobby, function (i, ele) {
+        row.push(`<li>${ele}</li>`)
+      })
+      $('#hobby').append(row.join(''))
+    </script> -->
+  </body>
+
+</html>

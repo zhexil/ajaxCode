@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <!-- 1. 导入自定义的ajax函数库 -->
+    <script src="js/hua-ajax.js"></script>
+    <title>Ajax</title>
+    <style>
+      section {
+        display: flex;
+        width: 400px;
+        height: 200px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-content: space-around;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <section>
+      <button class="postAdd">post添加《浮生六记》</button>
+      <button class="getInfo">get获取所有图书列表</button>
+      <button class="ajaxGet">ajaxGet获取id为1的图书</button>
+      <button class="ajaxPost">ajaxPost添加《东坡七集》</button>
+      <button class="xhrGet">使用xhr发起GET请求</button>
+      <button class="xhrPost">使用xhr发起POST请求</button>
+      <button class="ah">调用自定义ahAjax 函数</button>
+      <button class="fmdata">FormData对象管理表单数据</button>
+    </section>
+
+    <script>
+      $(function () {
+        $('.getInfo').on('click', function () {
+          $.get('http://www.liulongbin.top:3006/api/getbooks', function (res) {
+            console.log(res);
+          })
+        })
+        $('.postAdd').on('click', function () {
+          $.post('http://www.liulongbin.top:3006/api/addbook', { bookname: '浮生六记', author: '沈复', publisher: '天津人民出版社' }, function (res) {
+            console.log(res);//这里的res 是服务器返回的数据
+          })
+        })
+        $('.ajaxGet').on('click', function () {
+          $.ajax({
+            type: 'GET',
+            url: 'http://www.liulongbin.top:3006/api/getbooks',
+            data: { id: 1 },
+            success: function (res) {
+              console.log(res);
+            }
+          })
+        })
+        $('.ajaxPost').on('click', function () {
+          $.ajax({
+            type: 'POST',
+            url: 'http://www.liulongbin.top:3006/api/addbook',
+            data: {
+              bookname: '东坡七集',
+              author: '苏东坡',
+              publisher: '北宋'
+            },
+            success: function (res) {
+              console.log(res); // 请求成功后的回调函数 重复添加也会调用
+            },
+            statusCode: { // 一组数值的HTTP代码和函数对象，当响应时调用了相应的代码。例如，如果响应状态是404，将触发以下警报：
+              404: function () {
+                alert('page not found');
+              }
+            }
+          })
+        })
+        // 使用xhr发起GET请求
+        $('.xhrGet').on('click', function () {
+          // 创建XMLHttpRequest对象
+          let xhr = new XMLHttpRequest()
+          // 调用open函数，指定 请求方式 与 URL地址
+          xhr.open('GET', 'http://www.liulongbin.top:3006/api/getbooks?id=1&name=西游记')
+          // 调用 send函数，发起 Ajax 请求
+          xhr.send()
+          // 监听onreadystatechange事件
+          xhr.addEventListener('readystatechange', function () {
+            // 监听 xhr 对象的请求状态 readyState ；与服务器响应的状态 status
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              // 打印服务器响应回来的数据
+              console.log(xhr.responseText)
+              console.log(typeof xhr.responseText);
+              let res = JSON.parse(xhr.responseText)
+              // 这个转化好的对象就是jquery里面的res
+              console.log(res);
+            }
+          })
+        })
+        // 使用xhr发起POST请求
+        $('.xhrPost').on('click', function () {
+          let xhr = new XMLHttpRequest();
+          xhr.open('POST', 'http://www.liulongbin.top:3006/api/addbook');
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+          xhr.send('bookname=浮生六记&author=沈复&publisher=天津人民出版社');
+          xhr.addEventListener('readystatechange', function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              console.log(xhr.responseText);
+            }
+          })
+        })
+      })
+      $('.fmdata').on('click', function () {
+        // 1. 新建 FormData 对象
+        let fd = new FormData()
+        // 2. 为 FormData 添加表单项
+        fd.append('uname', 'zs')
+        fd.append('upwd', '123456')
+        // 3. 创建 XHR 对象
+        let xhr = new XMLHttpRequest()
+        // 4. 指定请求类型与URL地址
+        xhr.open('POST', 'http://www.liulongbin.top:3006/api/formdata')
+        // 5. 直接提交 FormData 对象，这与提交网页表单的效果，完全一样
+        xhr.send(fd)
+        xhr.addEventListener('readystatechange', function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+          }
+        })
+      })
+    </script>
+    <script>
+      // 2. 调用自定义的 ahAjax 函数，发起 Ajax 数据请求
+      const ah = document.querySelector('.ah')
+      ah.addEventListener('click', function () {
+        ahAjax({
+          method: 'GET',
+          url: 'http://www.liulongbin.top:3006/api/getbooks',
+          // data: { bookname: '浮生六记', author: '沈复', publisher: '天津人民出版社' },
+          success: function (res) {
+            console.log(res)
+          }
+        })
+      })
+    </script>
+  </body>
+
+</html>
